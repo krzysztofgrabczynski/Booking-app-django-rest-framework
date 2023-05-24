@@ -1,0 +1,15 @@
+# Pliki i katalogi Django
+**/__pycache__
+**/staticfiles
+**/media
+**/local_settings.py
+
+# Katalogi Docker
+.docker
+.git
+.idea
+
+# Inne
+*.pyc
+*.log
+*.swp
