@@ -25,7 +25,7 @@ class HotelSerializer(ModelSerializer):
     This is main serializer for HotelModel.
     """
 
-    hotel_room = HotelRoomsSerializer(many=True)
+    hotel_room = HotelRoomsSerializer(many=True, required=False)
 
     class Meta:
         model = HotelModel
@@ -41,13 +41,29 @@ class HotelMiniInformationSerializer(ModelSerializer):
         model = HotelModel
         fields = ["id", "hotel_name", "address", "rate"]
 
-
 class HotelRoomSerializer(ModelSerializer):
     """
     This is main serializer for HotelRoomModel.
     """
 
     hotel = HotelMiniInformationSerializer(many=False)
+
+    class Meta:
+        model = HotelRoomModel
+        fields = [
+            "id",
+            "hotel",
+            "room_no",
+            "capacity",
+            "description",
+            "price_per_night",
+            "is_available",
+        ]
+
+class HotelRoomCreationSerializer(ModelSerializer):
+    """
+    This is a serializer for creating new room.
+    """
 
     class Meta:
         model = HotelRoomModel
