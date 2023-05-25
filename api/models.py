@@ -8,6 +8,6 @@ class HotelModel(models.Model):
 
     def __str__(self) -> str:
         return self.hotel_name
-    
+
     def __repr__(self) -> str:
         return self.__str__()
