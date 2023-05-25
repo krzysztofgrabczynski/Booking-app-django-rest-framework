@@ -2,30 +2,30 @@ from rest_framework import viewsets
 from rest_framework.response import Response
 
 from .models import HotelModel, HotelRoomModel
-from .serializers import HotelSerializer, HotelRoomSerializer
+from .serializers import HotelSerializer, HotelRoomSerializer, HotelRoomCreationSerializer
 
 
 class HotelViewSet(viewsets.ModelViewSet):
     """
-    A viewset that provides information about hotels
+    A viewset that provides information about hotels.
     """
     serializer_class = HotelSerializer
     queryset = HotelModel.objects.all()
 
 
-    def list(self, request, *args, **kwargs):
-        queryset = self.filter_queryset(self.get_queryset())
-
-        page = self.paginate_queryset(queryset)
-        if page is not None:
-            serializer = self.get_serializer(page, many=True)
-            return self.get_paginated_response(serializer.data)
-
-        serializer = self.get_serializer(queryset, many=True)
-        return Response(serializer.data)
-
-
 class HotelRoomViewSet(viewsets.ModelViewSet):
+    """
+    A viewset that provides information about rooms.
+    """
     serializer_class = HotelRoomSerializer
     queryset = HotelRoomModel.objects.all()
+
+    def create(self, request, *args, **kwargs):
+        serializer = HotelRoomCreationSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        self.perform_create(serializer)
+        return Response(serializer.data)
+
+    def perform_create(self, serializer):
+        serializer.save()
 
