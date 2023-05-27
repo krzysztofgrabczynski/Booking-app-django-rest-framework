@@ -31,10 +31,10 @@ class HotelCreateView(AddHotelPermissionsMixin, generics.CreateAPIView):
 
 
 class HotelUpdateDestroyView(
-    IsAdminPermissionsMixin, 
+    IsAdminPermissionsMixin,
     mixins.UpdateModelMixin,
-    mixins.DestroyModelMixin, 
-    viewsets.GenericViewSet
+    mixins.DestroyModelMixin,
+    viewsets.GenericViewSet,
 ):
     """
     This is a generic viewset for updating and deleting existing hotel. Only for admin users.
