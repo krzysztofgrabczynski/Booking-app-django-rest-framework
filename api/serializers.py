@@ -5,7 +5,7 @@ from .models import HotelModel, HotelRoomModel
 
 class HotelSerializer(ModelSerializer):
     """
-    This is main serializer for HotelModel 
+    This is main serializer for HotelModel
     """
 
     class Meta:
@@ -21,6 +21,7 @@ class HotelMiniInformationSerializer(ModelSerializer):
     class Meta:
         model = HotelModel
         fields = ["id", "hotel_name", "address", "rate"]
+
 
 class HotelRoomSerializer(ModelSerializer):
     """
@@ -40,6 +41,7 @@ class HotelRoomSerializer(ModelSerializer):
             "price_per_night",
             "is_available",
         ]
+
 
 class HotelRoomCreationSerializer(ModelSerializer):
     """
