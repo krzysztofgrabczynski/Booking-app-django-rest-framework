@@ -1,4 +1,4 @@
-from rest_framework import viewsets, generics, mixins, status
+from rest_framework import viewsets, generics, mixins, status, permissions
 from rest_framework.response import Response
 
 from .models import HotelModel, HotelRoomModel
@@ -7,6 +7,7 @@ from .serializers import (
     HotelRoomSerializer,
     HotelRoomCreationSerializer,
 )
+from .mixins import AddHotelPermissionsMixin, IsAdminPermissionsMixin
 
 
 class HotelListRetriveGenericViewSet(
@@ -20,7 +21,7 @@ class HotelListRetriveGenericViewSet(
     serializer_class = HotelSerializer
 
 
-class HotelCreateView(generics.CreateAPIView):
+class HotelCreateView(AddHotelPermissionsMixin, generics.CreateAPIView):
     """
     This is a CreateAPIView for creating a new hotel.
     """
@@ -30,7 +31,10 @@ class HotelCreateView(generics.CreateAPIView):
 
 
 class HotelUpdateDestroyView(
-    mixins.UpdateModelMixin, mixins.DestroyModelMixin, viewsets.GenericViewSet
+    IsAdminPermissionsMixin, 
+    mixins.UpdateModelMixin,
+    mixins.DestroyModelMixin, 
+    viewsets.GenericViewSet
 ):
     """
     This is a generic viewset for updating and deleting existing hotel. Only for admin users.
