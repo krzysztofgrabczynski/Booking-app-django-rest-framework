@@ -4,8 +4,8 @@ from rest_framework.routers import DefaultRouter
 from . import views
 
 router = DefaultRouter()
-router.register(r"hotels", views.HotelListRetriveGenericViewSet)
-router.register(r"rooms", views.HotelRoomViewSet)
+router.register(r"hotels", views.HotelListRetriveGenericViewSet, basename='hotel')
+router.register(r"rooms", views.HotelRoomViewSet, basename='room')
 
 urlpatterns = [
     path("", include(router.urls)),
