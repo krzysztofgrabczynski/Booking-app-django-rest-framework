@@ -1,11 +1,13 @@
-from rest_framework import mixins
-
-from .permissions import AddHotelPermissions, IsAdminPermissions
+from .permissions import AddHotelPermission, IsAdminPermission, IsObjectOwnerPermission
 
 
-class AddHotelPermissionsMixin:
-    permission_classes = [AddHotelPermissions]
+class AddHotelPermissionMixin:
+    permission_classes = [AddHotelPermission]
 
 
-class IsAdminPermissionsMixin:
-    permission_classes = [IsAdminPermissions]
+class IsAdminPermissionMixin:
+    permission_classes = [IsAdminPermission]
+
+
+class IsObjectOwnerPermissionMixi:
+    permission_classes = [IsObjectOwnerPermission]
