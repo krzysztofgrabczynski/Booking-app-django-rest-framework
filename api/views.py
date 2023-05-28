@@ -6,8 +6,13 @@ from .serializers import (
     HotelSerializer,
     HotelRoomSerializer,
     HotelRoomCreationSerializer,
+    HotelDetailSerializer,
 )
-from .mixins import AddHotelPermissionsMixin, IsAdminPermissionsMixin
+from .mixins import (
+    AddHotelPermissionMixin,
+    IsAdminPermissionMixin,
+    IsObjectOwnerPermissionMixi,
+)
 
 
 class HotelListRetriveGenericViewSet(
@@ -20,8 +25,13 @@ class HotelListRetriveGenericViewSet(
     queryset = HotelModel.objects.all()
     serializer_class = HotelSerializer
 
+    def retrieve(self, request, *args, **kwargs):
+        instance = self.get_object()
+        serializer = HotelDetailSerializer(instance)
+        return Response(serializer.data)
 
-class HotelCreateView(AddHotelPermissionsMixin, generics.CreateAPIView):
+
+class HotelCreateView(AddHotelPermissionMixin, generics.CreateAPIView):
     """
     This is a CreateAPIView for creating a new hotel.
     """
@@ -31,7 +41,7 @@ class HotelCreateView(AddHotelPermissionsMixin, generics.CreateAPIView):
 
 
 class HotelUpdateDestroyView(
-    IsAdminPermissionsMixin,
+    IsAdminPermissionMixin,
     mixins.UpdateModelMixin,
     mixins.DestroyModelMixin,
     viewsets.GenericViewSet,
@@ -55,9 +65,9 @@ hotel_update_view = HotelUpdateDestroyView.as_view({"put": "update"})
 hotel_delete_view = HotelUpdateDestroyView.as_view({"delete": "destroy"})
 
 
-class HotelRoomViewSet(viewsets.ModelViewSet):
+class HotelRoomViewSet(IsObjectOwnerPermissionMixi, viewsets.ModelViewSet):
     """
-    A viewset that provides information about rooms.
+    A viewset for CRUD operations on the HotelRoomModel.
     """
 
     serializer_class = HotelRoomSerializer
@@ -68,6 +78,3 @@ class HotelRoomViewSet(viewsets.ModelViewSet):
         serializer.is_valid(raise_exception=True)
         self.perform_create(serializer)
         return Response(serializer.data)
-
-    def perform_create(self, serializer):
-        serializer.save()
