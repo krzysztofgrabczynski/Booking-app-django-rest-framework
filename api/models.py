@@ -1,4 +1,5 @@
 from django.db import models
+from django.contrib.auth.models import User
 
 
 class HotelModel(models.Model):
@@ -14,6 +15,7 @@ class HotelModel(models.Model):
 
 
 class HotelRoomModel(models.Model):
+    owner = models.ForeignKey(User, on_delete=models.CASCADE, related_name="owner")
     hotel = models.ForeignKey(
         HotelModel, on_delete=models.CASCADE, related_name="hotel_room"
     )
