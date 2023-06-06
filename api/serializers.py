@@ -1,6 +1,21 @@
 from rest_framework.serializers import ModelSerializer
 
+from django.contrib.auth.models import User
+
 from .models import HotelModel, HotelRoomModel
+
+
+class UserSerializer(ModelSerializer):
+    """
+    This is a serializer for User model. It is used in UserCreateView for creating new users.
+    """
+    class Meta:
+        model = User
+        fields = ["id", "username", "email", "password"]
+        extra_kwargs = {
+            "email": {"required": True},
+            "password": {"required": True, "write_only": True},
+        }
 
 
 class HotelSerializer(ModelSerializer):
