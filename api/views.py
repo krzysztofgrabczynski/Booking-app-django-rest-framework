@@ -1,5 +1,6 @@
-from rest_framework import viewsets, generics, mixins, status, permissions
+from rest_framework import viewsets, generics, mixins, status
 from rest_framework.response import Response
+from rest_framework.decorators import action
 
 from .models import HotelModel, HotelRoomModel
 from .serializers import (
@@ -65,9 +66,9 @@ hotel_update_view = HotelUpdateDestroyView.as_view({"put": "update"})
 hotel_delete_view = HotelUpdateDestroyView.as_view({"delete": "destroy"})
 
 
-class HotelRoomViewSet(IsObjectOwnerPermissionMixi, viewsets.ModelViewSet):
+class HotelRoomViewSet(IsObjectOwnerPermissionMixi, viewsets.ModelViewSet):# IsObjectOwnerPermissionMixi, 
     """
-    A viewset for CRUD operations on the HotelRoomModel.
+    A viewset for CRUD operations on the HotelRoomModel and room reservation functionality.
     """
 
     serializer_class = HotelRoomSerializer
@@ -78,3 +79,14 @@ class HotelRoomViewSet(IsObjectOwnerPermissionMixi, viewsets.ModelViewSet):
         serializer.is_valid(raise_exception=True)
         self.perform_create(serializer)
         return Response(serializer.data)
+
+    @action(detail=True, methods=['POST'])
+    def reservation(self, request, *args, **kwargs):
+        room = self.get_object()
+        if room.is_available == False:
+            return Response('Room is already booked')
+        
+        room.is_available = False
+        room.save()
+        return Response('Booking successful')
+            
