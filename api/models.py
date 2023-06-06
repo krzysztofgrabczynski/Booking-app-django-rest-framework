@@ -33,3 +33,10 @@ class HotelRoomModel(models.Model):
 
     def __repr__(self) -> str:
         return self._name()
+
+
+class RoomReservation(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    room = models.ForeignKey(
+        HotelRoomModel, on_delete=models.CASCADE, related_name="room_reservation"
+    )
