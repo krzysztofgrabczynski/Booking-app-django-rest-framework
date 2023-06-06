@@ -1,6 +1,11 @@
-from rest_framework.permissions import IsAuthenticatedOrReadOnly, AllowAny
+from rest_framework.permissions import IsAuthenticated, AllowAny
 
-from .permissions import AddHotelPermission, IsAdminPermission, IsObjectOwnerPermission
+from .permissions import (
+    AddHotelPermission,
+    IsAdminPermission,
+    IsObjectOwnerPermission,
+    IsProfileOwnerPermission,
+)
 
 
 class AddHotelPermissionMixin:
@@ -11,8 +16,12 @@ class IsAdminPermissionMixin:
     permission_classes = [IsAdminPermission]
 
 
-class IsObjectOwnerPermissionMixi:
-    permission_classes = [IsAuthenticatedOrReadOnly, IsObjectOwnerPermission]
+class IsObjectOwnerPermissionMixin:
+    permission_classes = [IsAuthenticated, IsObjectOwnerPermission]
+
+
+class IsProfileOwnerMixin:
+    permission_classes = [IsAuthenticated, IsProfileOwnerPermission]
 
 
 class AllowAnyPermissionMixin:
