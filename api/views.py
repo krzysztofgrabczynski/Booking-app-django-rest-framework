@@ -1,9 +1,13 @@
+from django.contrib.auth.models import User
+
 from rest_framework import viewsets, generics, mixins, status
 from rest_framework.response import Response
 from rest_framework.decorators import action
+from rest_framework.authtoken.models import Token
 
 from .models import HotelModel, HotelRoomModel
 from .serializers import (
+    UserSerializer,
     HotelSerializer,
     HotelRoomSerializer,
     HotelRoomCreationSerializer,
@@ -13,8 +17,37 @@ from .mixins import (
     AddHotelPermissionMixin,
     IsAdminPermissionMixin,
     IsObjectOwnerPermissionMixi,
+    AllowAnyPermissionMixin,
 )
 
+
+class UserCreateView(AllowAnyPermissionMixin, generics.CreateAPIView):
+    """
+    This is a CreateAPIView for User model. It creates a new user with valid auth_token.
+    """
+    queryset = User.objects.all()
+    serializer_class = UserSerializer
+
+    def _create_token(self, user):
+        token = Token.objects.create(user=user)
+        return token
+
+    def create(self, request, *args, **kwargs):
+        serializer = UserSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        
+        if User.objects.filter(email=serializer.data['email']).exists():
+            return Response("User with this email already exists")
+
+        username = serializer.data.get('username')
+        email = serializer.data.get('email')
+        password = serializer.data.get('password')
+
+        user = User.objects.create_user(username=username, email=email, password=password)
+        self._create_token(user)
+        return Response(serializer.data)
+        
+        
 
 class HotelListRetriveGenericViewSet(
     mixins.ListModelMixin, mixins.RetrieveModelMixin, viewsets.GenericViewSet
@@ -66,9 +99,7 @@ hotel_update_view = HotelUpdateDestroyView.as_view({"put": "update"})
 hotel_delete_view = HotelUpdateDestroyView.as_view({"delete": "destroy"})
 
 
-class HotelRoomViewSet(
-    IsObjectOwnerPermissionMixi, viewsets.ModelViewSet
-):  # IsObjectOwnerPermissionMixi,
+class HotelRoomViewSet(IsObjectOwnerPermissionMixi, viewsets.ModelViewSet):
     """
     A viewset for CRUD operations on the HotelRoomModel and room reservation functionality.
     """
