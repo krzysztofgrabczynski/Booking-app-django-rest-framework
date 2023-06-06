@@ -30,8 +30,10 @@ class IsAdminPermission(permissions.DjangoModelPermissions):
 
 
 class IsObjectOwnerPermission(permissions.BasePermission):
+    SAFE_METHODS = ('GET', 'HEAD', 'OPTIONS', 'POST')
+
     def has_object_permission(self, request, view, obj):
-        if request.method in permissions.SAFE_METHODS:
+        if request.method in self.SAFE_METHODS:
             return True
 
         user = request.user

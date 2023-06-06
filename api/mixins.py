@@ -1,3 +1,5 @@
+from rest_framework.permissions import IsAuthenticatedOrReadOnly
+
 from .permissions import AddHotelPermission, IsAdminPermission, IsObjectOwnerPermission
 
 
@@ -10,4 +12,4 @@ class IsAdminPermissionMixin:
 
 
 class IsObjectOwnerPermissionMixi:
-    permission_classes = [IsObjectOwnerPermission]
+    permission_classes = [IsAuthenticatedOrReadOnly, IsObjectOwnerPermission]
