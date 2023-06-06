@@ -25,6 +25,7 @@ class UserCreateView(AllowAnyPermissionMixin, generics.CreateAPIView):
     """
     This is a CreateAPIView for User model. It creates a new user with valid auth_token.
     """
+
     queryset = User.objects.all()
     serializer_class = UserSerializer
 
@@ -35,19 +36,20 @@ class UserCreateView(AllowAnyPermissionMixin, generics.CreateAPIView):
     def create(self, request, *args, **kwargs):
         serializer = UserSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
-        
-        if User.objects.filter(email=serializer.data['email']).exists():
+
+        if User.objects.filter(email=serializer.data["email"]).exists():
             return Response("User with this email already exists")
 
-        username = serializer.data.get('username')
-        email = serializer.data.get('email')
-        password = serializer.data.get('password')
+        username = serializer.data.get("username")
+        email = serializer.data.get("email")
+        password = serializer.data.get("password")
 
-        user = User.objects.create_user(username=username, email=email, password=password)
+        user = User.objects.create_user(
+            username=username, email=email, password=password
+        )
         self._create_token(user)
         return Response(serializer.data)
-        
-        
+
 
 class HotelListRetriveGenericViewSet(
     mixins.ListModelMixin, mixins.RetrieveModelMixin, viewsets.GenericViewSet

@@ -9,6 +9,7 @@ class UserSerializer(ModelSerializer):
     """
     This is a serializer for User model. It is used in UserCreateView for creating new users.
     """
+
     class Meta:
         model = User
         fields = ["id", "username", "email", "password"]
