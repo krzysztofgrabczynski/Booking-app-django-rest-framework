@@ -66,7 +66,9 @@ hotel_update_view = HotelUpdateDestroyView.as_view({"put": "update"})
 hotel_delete_view = HotelUpdateDestroyView.as_view({"delete": "destroy"})
 
 
-class HotelRoomViewSet(IsObjectOwnerPermissionMixi, viewsets.ModelViewSet):# IsObjectOwnerPermissionMixi, 
+class HotelRoomViewSet(
+    IsObjectOwnerPermissionMixi, viewsets.ModelViewSet
+):  # IsObjectOwnerPermissionMixi,
     """
     A viewset for CRUD operations on the HotelRoomModel and room reservation functionality.
     """
@@ -80,13 +82,12 @@ class HotelRoomViewSet(IsObjectOwnerPermissionMixi, viewsets.ModelViewSet):# IsO
         self.perform_create(serializer)
         return Response(serializer.data)
 
-    @action(detail=True, methods=['POST'])
+    @action(detail=True, methods=["POST"])
     def reservation(self, request, *args, **kwargs):
         room = self.get_object()
         if room.is_available == False:
-            return Response('Room is already booked')
-        
+            return Response("Room is already booked")
+
         room.is_available = False
         room.save()
-        return Response('Booking successful')
-            
+        return Response("Booking successful")
