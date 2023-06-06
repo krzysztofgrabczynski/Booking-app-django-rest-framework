@@ -5,7 +5,7 @@ from rest_framework.response import Response
 from rest_framework.decorators import action
 from rest_framework.authtoken.models import Token
 
-from .models import HotelModel, HotelRoomModel
+from .models import HotelModel, HotelRoomModel, RoomReservation
 from .serializers import (
     UserSerializer,
     HotelSerializer,
@@ -16,39 +16,10 @@ from .serializers import (
 from .mixins import (
     AddHotelPermissionMixin,
     IsAdminPermissionMixin,
-    IsObjectOwnerPermissionMixi,
+    IsObjectOwnerPermissionMixin,
     AllowAnyPermissionMixin,
+    IsProfileOwnerMixin,
 )
-
-
-class UserCreateView(AllowAnyPermissionMixin, generics.CreateAPIView):
-    """
-    This is a CreateAPIView for User model. It creates a new user with valid auth_token.
-    """
-
-    queryset = User.objects.all()
-    serializer_class = UserSerializer
-
-    def _create_token(self, user):
-        token = Token.objects.create(user=user)
-        return token
-
-    def create(self, request, *args, **kwargs):
-        serializer = UserSerializer(data=request.data)
-        serializer.is_valid(raise_exception=True)
-
-        if User.objects.filter(email=serializer.data["email"]).exists():
-            return Response("User with this email already exists")
-
-        username = serializer.data.get("username")
-        email = serializer.data.get("email")
-        password = serializer.data.get("password")
-
-        user = User.objects.create_user(
-            username=username, email=email, password=password
-        )
-        self._create_token(user)
-        return Response(serializer.data)
 
 
 class HotelListRetriveGenericViewSet(
@@ -101,7 +72,7 @@ hotel_update_view = HotelUpdateDestroyView.as_view({"put": "update"})
 hotel_delete_view = HotelUpdateDestroyView.as_view({"delete": "destroy"})
 
 
-class HotelRoomViewSet(IsObjectOwnerPermissionMixi, viewsets.ModelViewSet):
+class HotelRoomViewSet(IsObjectOwnerPermissionMixin, viewsets.ModelViewSet):
     """
     A viewset for CRUD operations on the HotelRoomModel and room reservation functionality.
     """
@@ -123,4 +94,59 @@ class HotelRoomViewSet(IsObjectOwnerPermissionMixi, viewsets.ModelViewSet):
 
         room.is_available = False
         room.save()
+        RoomReservation.objects.update_or_create(user=request.user, room=room)
         return Response("Booking successful")
+
+
+class UserCreateView(AllowAnyPermissionMixin, generics.CreateAPIView):
+    """
+    This is a CreateAPIView for User model. It creates a new user with valid auth_token.
+    """
+
+    queryset = User.objects.all()
+    serializer_class = UserSerializer
+
+    def _create_token(self, user):
+        token = Token.objects.create(user=user)
+        return token
+
+    def create(self, request, *args, **kwargs):
+        serializer = UserSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+
+        if User.objects.filter(email=serializer.data["email"]).exists():
+            return Response("User with this email already exists")
+
+        username = serializer.data.get("username")
+        email = serializer.data.get("email")
+        password = serializer.data.get("password")
+
+        user = User.objects.create_user(
+            username=username, email=email, password=password
+        )
+        self._create_token(user)
+        return Response(serializer.data)
+
+
+class UserDetailView(IsProfileOwnerMixin, generics.RetrieveAPIView):
+    """
+    Class representing details about a user. User can check only his own profile and list the room reservations that he has made.
+    """
+
+    queryset = User.objects.all()
+    serializer_class = UserSerializer
+
+    def get(self, request, *args, **kwargs):
+        action = self.kwargs.get("action")
+        if action == "reservations":
+            return self.reservations(self, *args, **kwargs)
+
+        return self.retrieve(request, *args, **kwargs)
+
+    @action(detail=True, methods=["GET"])
+    def reservations(self, *args, **kwargs):
+        reservations = RoomReservation.objects.filter(user=self.kwargs.get("pk"))
+        rooms = HotelRoomModel.objects.filter(room_reservation__in=reservations)
+
+        serializer = HotelRoomSerializer(rooms, many=True)
+        return Response(serializer.data)
