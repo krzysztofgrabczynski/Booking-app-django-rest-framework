@@ -9,6 +9,7 @@ router.register(r"rooms", views.HotelRoomViewSet, basename="room")
 
 urlpatterns = [
     path("", include(router.urls)),
+    path("sign_up/", views.UserCreateView.as_view()),
     path("create_hotel/", views.HotelCreateView.as_view()),
     path("delete_hotel/<int:pk>/", views.hotel_delete_view),
     path("update_hotel/<int:pk>/", views.hotel_update_view),
