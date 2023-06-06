@@ -3,7 +3,7 @@ from rest_framework import permissions
 
 class AddHotelPermission(permissions.DjangoModelPermissions):
     """
-    Class permissions which can check if the user has permisison to create (using POST method) new objects of the HotelModel class.
+    Class permission which can check if the user has permisison to create (using POST method) new objects of the HotelModel class.
     """
 
     perms_map = {
@@ -19,7 +19,7 @@ class AddHotelPermission(permissions.DjangoModelPermissions):
 
 class IsAdminPermission(permissions.DjangoModelPermissions):
     """
-    Class permissions which can check if the user is a member of the 'AdminUser' group or is a superuser (have all permissions).
+    Class permission which can check if the user is a member of the 'AdminUser' group or is a superuser (have all permissions).
     """
 
     def has_permissions(self, request, view):
@@ -30,6 +30,10 @@ class IsAdminPermission(permissions.DjangoModelPermissions):
 
 
 class IsObjectOwnerPermission(permissions.BasePermission):
+    """
+    Class permission wich can check if the user is owner of the object when trying to update or delete it. 
+    Updating SAFE_METHODS by adding 'POST' method inside, because of the 'reservation' method in HotelRoomViewSet class (it uses the 'POST' method as SAFE_METHODS).
+    """
     SAFE_METHODS = ('GET', 'HEAD', 'OPTIONS', 'POST')
 
     def has_object_permission(self, request, view, obj):
