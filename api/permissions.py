@@ -31,7 +31,7 @@ class IsAdminPermission(permissions.DjangoModelPermissions):
 
 class IsObjectOwnerPermission(permissions.BasePermission):
     """
-    Class permission wich can check if the user is owner of the object when trying to update or delete it.
+    Class permission which can check if the user is owner of the object when trying to update or delete it.
     Updating SAFE_METHODS by adding 'POST' method inside, because of the 'reservation' method in HotelRoomViewSet class (it uses the 'POST' method as SAFE_METHODS).
     """
 
@@ -46,4 +46,17 @@ class IsObjectOwnerPermission(permissions.BasePermission):
             return True
         if user == obj.owner:
             return True
+        return False
+
+
+class IsProfileOwnerPermission(permissions.BasePermission):
+    """
+    Class permission which check if the user can access the specific profile (has to be an owner of the profile).
+    """
+
+    def has_object_permission(self, request, view, obj):
+        user = request.user
+        if user == obj:
+            return True
+
         return False
