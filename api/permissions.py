@@ -60,4 +60,3 @@ class IsProfileOwnerPermission(permissions.BasePermission):
         if user.pk == user_profile:
             return True
         return False
-    

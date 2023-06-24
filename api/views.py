@@ -89,7 +89,7 @@ class HotelRoomViewSet(IsObjectOwnerPermissionMixin, viewsets.ModelViewSet):
     @action(detail=True, methods=["POST"])
     def reservation(self, request, *args, **kwargs):
         room = self.get_object()
-        if room.is_available == False:
+        if room.is_available is False:
             return Response("Room is already booked")
 
         room.is_available = False
