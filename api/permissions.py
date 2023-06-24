@@ -54,9 +54,10 @@ class IsProfileOwnerPermission(permissions.BasePermission):
     Class permission which check if the user can access the specific profile (has to be an owner of the profile).
     """
 
-    def has_object_permission(self, request, view, obj):
+    def has_permission(self, request, view):
+        user_profile = view.kwargs.get("pk")
         user = request.user
-        if user == obj:
+        if user.pk == user_profile:
             return True
-
         return False
+    
