@@ -1,6 +1,6 @@
 from django.contrib.auth.models import User
 
-from rest_framework import viewsets, generics, mixins, status
+from rest_framework import viewsets, generics, mixins, status, filters
 from rest_framework.response import Response
 from rest_framework.decorators import action
 from rest_framework.authtoken.models import Token
@@ -31,6 +31,9 @@ class HotelListRetriveGenericViewSet(
 
     queryset = HotelModel.objects.all()
     serializer_class = HotelSerializer
+    filter_backends = [filters.SearchFilter, filters.OrderingFilter]
+    search_fields = ["hotel_name"]
+    ordering_fields = ["rate"]
 
     def retrieve(self, request, *args, **kwargs):
         instance = self.get_object()
