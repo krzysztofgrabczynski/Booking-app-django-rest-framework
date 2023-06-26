@@ -1,4 +1,4 @@
-from rest_framework.serializers import ModelSerializer
+from rest_framework.serializers import ModelSerializer, ValidationError
 
 from django.contrib.auth.models import User
 
@@ -17,6 +17,12 @@ class UserSerializer(ModelSerializer):
             "email": {"required": True},
             "password": {"required": True, "write_only": True},
         }
+
+    def validate_email(self, email):
+        if User.objects.filter(email=email).exists():
+            raise ValidationError("User with this email already exists")
+        
+        return email
 
 
 class HotelSerializer(ModelSerializer):

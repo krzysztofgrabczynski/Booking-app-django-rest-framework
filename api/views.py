@@ -117,9 +117,6 @@ class UserCreateView(AllowAnyPermissionMixin, generics.CreateAPIView):
         serializer = UserSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
 
-        if User.objects.filter(email=serializer.data["email"]).exists():
-            return Response("User with this email already exists")
-
         username = serializer.data.get("username")
         email = serializer.data.get("email")
         password = serializer.data.get("password")
